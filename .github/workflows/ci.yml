@@ -14,3 +14,13 @@ jobs:
           uname -a
       - name: Run tests
         run: bash ./test.sh
+      - name: Create build output
+        run: |
+          mkdir -p dist
+          cp app.txt dist/
+          echo "commit: $GITHUB_SHA" > dist/build-info.txt
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-build
+          path: dist/
