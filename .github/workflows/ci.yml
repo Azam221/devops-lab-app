@@ -1,0 +1,16 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: action/checkout@v6
+      - name: Show runner details
+       run: |
+        echo "Runner OS: $RUNNER_OS"
+          uname -a
+      - name: Run tests
+        run: bash ./test.sh
