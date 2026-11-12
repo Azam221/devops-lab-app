@@ -1,16 +1,10 @@
-name: ci
-on:
-  pull_request:
-  push:
-    branches: [main]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - name: Show runner details
+      - name: Create build output
         run: |
-          echo "Runner OS: $RUNNER_OS"
-          uname -a
-      - name: Run tests
-        run: bash ./test.sh
+          mkdir -p dist
+          cp app.txt dist/
+          echo "commit: $GITHUB_SHA" > dist/build-info.txt
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: app-build
+          path: dist/
