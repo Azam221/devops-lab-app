@@ -1,0 +1,14 @@
+parameters:
+  - name: artifactName
+    type: string
+    default: app-build
+steps:
+  - script: bash ./test.sh
+    displayName: Run tests
+  - script: |
+      mkdir -p dist
+      cp app.txt dist/
+      echo "commit: $(Build.SourceVersion)" > dist/build-info.txt
+    displayName: Create build output
+  - publish: dist
+    artifact: ${{ parameters.artifactName }}
