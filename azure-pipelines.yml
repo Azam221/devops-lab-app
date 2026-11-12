@@ -6,14 +6,30 @@ pr:
     include: [main]
 pool:
   vmImage: ubuntu-latest
-steps:
-  - checkout: self
-  - script: bash ./test.sh
-    displayName: Run tests
-  - script: |
-      mkdir -p dist
-      cp app.txt dist/
-      echo "commit: $(Build.SourceVersion)" > dist/build-info.txt
-    displayName: Create build output
-  - publish: dist
-    artifact: app-build
+stages:
+  - stage: Build
+    jobs:
+      - job: build
+        steps:
+          - checkout: self
+          - script: bash ./test.sh
+            displayName: Run tests
+          - script: |
+              mkdir -p dist
+              cp app.txt dist/
+              echo "commit: $(Build.SourceVersion)" > dist/build-info.txt
+            displayName: Create build output
+          - publish: dist
+            artifact: app-build
+  - stage: Deploy
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: deploy
+        environment: prod
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - script: cat $(Pipeline.Workspace)/app-build/build-info.txt
+                  displayName: Show what we are deploying
