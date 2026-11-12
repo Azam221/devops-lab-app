@@ -1,0 +1,19 @@
+trigger:
+  branches:
+    include: [main]
+pr:
+  branches:
+    include: [main]
+pool:
+  vmImage: ubuntu-latest
+steps:
+  - checkout: self
+  - script: bash ./test.sh
+    displayName: Run tests
+  - script: |
+      mkdir -p dist
+      cp app.txt dist/
+      echo "commit: $(Build.SourceVersion)" > dist/build-info.txt
+    displayName: Create build output
+  - publish: dist
+    artifact: app-build
