@@ -24,3 +24,7 @@ jobs:
         with:
           name: app-build
           path: dist/
+      - name: Show config
+        run: |
+          echo "Environment: ${{ vars.APP_ENV }}"
+          echo "Secret value: ${{ secrets.DEMO_SECRET }}"
